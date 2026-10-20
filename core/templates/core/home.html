@@ -1,0 +1,28 @@
+{% extends "core/base.html" %}
+{% block title %}Pulse — Search by quality{% endblock %}
+{% block body_class %}home-page{% endblock %}
+{% block body %}
+<main class="home-main">
+    <h1 class="home-logo" aria-label="Pulse">
+        <span class="p">P</span><span class="u">u</span><span class="l">l</span><span class="s">s</span><span class="e">e</span>
+    </h1>
+    <p class="home-tagline">Search by content quality, not popularity</p>
+
+    <div class="home-search">
+        <form action="{% url 'search' %}" method="get" role="search">
+            <div class="search-input-wrap">
+                <input type="text" name="q" autofocus autocomplete="off"
+                       placeholder="Search topics, ideas, and articles…"
+                       aria-label="Search">
+            </div>
+            <div class="home-search-actions">
+                <button type="submit" class="btn">Pulse Search</button>
+            </div>
+        </form>
+    </div>
+</main>
+<footer class="home-footer">
+    <a href="{% url 'recommendations' %}">Recommendations</a>
+    <span>Quality-ranked retrieval · not engagement-ranked feeds</span>
+</footer>
+{% endblock %}

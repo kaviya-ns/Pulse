@@ -1,0 +1,62 @@
+{% extends "core/base.html" %}
+{% load pulse_extras %}
+{% block title %}Recommendations — Pulse{% endblock %}
+{% block body %}
+<header class="site-header">
+    <a href="{% url 'home' %}" class="logo"><span>P</span>ulse</a>
+    <div class="header-search">
+        <form action="{% url 'search' %}" method="get" role="search">
+            <div class="search-input-wrap">
+                <input type="text" name="q" placeholder="Search…" aria-label="Search">
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+</header>
+
+<div class="page-wrap">
+    <h1 class="page-title">Personalized recommendations</h1>
+    <p class="results-meta" style="margin-top:0">Demo: pick a synthetic reader profile to compare content-based vs collaborative suggestions.</p>
+
+    <form method="get" class="rec-form">
+        <select name="user_id" aria-label="Reader profile">
+            <option value="">Choose a reader…</option>
+            {% for r in readers %}
+                <option value="{{ r.id }}" {% if selected_id == r.id|stringformat:"s" %}selected{% endif %}>{{ r.username }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Get recommendations</button>
+    </form>
+
+    {% if selected_id %}
+    <div class="rec-columns">
+        <section class="rec-column">
+            <h3>Content-based</h3>
+            <ul class="rec-list">
+            {% for r in content_recs %}
+                <li>
+                    <a href="{% url 'post_detail' r.post.id %}" class="rec-topic">{{ r.post.topic|topic_title }}</a>
+                    <div class="rec-meta">Score {{ r.score }} · Quality {{ r.post.quality_score|floatformat:2 }}</div>
+                </li>
+            {% empty %}
+                <li class="empty-state">No suggestions for this reader.</li>
+            {% endfor %}
+            </ul>
+        </section>
+        <section class="rec-column">
+            <h3>Collaborative filtering</h3>
+            <ul class="rec-list">
+            {% for r in collab_recs %}
+                <li>
+                    <a href="{% url 'post_detail' r.post.id %}" class="rec-topic">{{ r.post.topic|topic_title }}</a>
+                    <div class="rec-meta">Score {{ r.score }} · Quality {{ r.post.quality_score|floatformat:2 }}</div>
+                </li>
+            {% empty %}
+                <li class="empty-state">No suggestions for this reader.</li>
+            {% endfor %}
+            </ul>
+        </section>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "core/base.html" %}
+{% load pulse_extras %}
+{% block title %}{% if query %}{{ query }} — Pulse{% else %}Search — Pulse{% endif %}{% endblock %}
+{% block body %}
+<header class="site-header">
+    <a href="{% url 'home' %}" class="logo" aria-label="Pulse home">
+        <span>P</span>ulse
+    </a>
+    <div class="header-search">
+        <form action="{% url 'search' %}" method="get" role="search">
+            <div class="search-input-wrap">
+                <input type="text" name="q" value="{{ query }}" autofocus autocomplete="off"
+                       aria-label="Search">
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+    <nav class="header-nav">
+        <a href="{% url 'recommendations' %}" class="btn">Recommendations</a>
+    </nav>
+</header>
+
+<div class="results-layout">
+    {% if query %}
+    <p class="results-meta">
+        About {{ results|length }} result{% if results|length != 1 %}s{% endif %} for <strong>{{ query }}</strong>
+    </p>
+
+    <form action="{% url 'search' %}" method="get" class="refined-toggle">
+        <input type="hidden" name="q" value="{{ query }}">
+        <label>
+            <input type="checkbox" name="refined" value="on" {% if refined %}checked{% endif %}
+                   onchange="this.form.submit()">
+            Refined search (query expansion)
+        </label>
+    </form>
+
+    {% if results %}
+        {% for r in results %}
+        <article class="result-item">
+            <div class="result-url">pulse › {{ r.post.topic }} › post #{{ r.post.id }}</div>
+            <h2 class="result-title">
+                <a href="{% url 'post_detail' r.post.id %}">{{ r.post.topic|topic_title }}</a>
+            </h2>
+            <p class="result-snippet">
+                {{ r.post.content|search_snippet:220|highlight_query:query }}
+            </p>
+            <div class="result-badges">
+                <span class="result-badge">Relevance {{ r.score }}</span>
+                <span class="result-badge">Quality {{ r.post.quality_score|floatformat:2 }}</span>
+            </div>
+        </article>
+        {% endfor %}
+    {% else %}
+        <p class="empty-state">Your search did not match any documents. Try different keywords.</p>
+    {% endif %}
+
+    {% else %}
+    <p class="empty-state">Enter a search above to find quality-ranked articles.</p>
+    {% endif %}
+</div>
+{% endblock %}

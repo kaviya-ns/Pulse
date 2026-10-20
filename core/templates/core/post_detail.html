@@ -1,0 +1,39 @@
+{% extends "core/base.html" %}
+{% load pulse_extras %}
+{% block title %}{{ post.topic|topic_title }} — Pulse{% endblock %}
+{% block body %}
+<header class="site-header">
+    <a href="{% url 'home' %}" class="logo"><span>P</span>ulse</a>
+    <div class="header-search">
+        <form action="{% url 'search' %}" method="get" role="search">
+            <div class="search-input-wrap">
+                <input type="text" name="q" placeholder="Search…" aria-label="Search">
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+    <nav class="header-nav">
+        <a href="{% url 'recommendations' %}">Recommendations</a>
+    </nav>
+</header>
+
+<article class="article-wrap">
+    <a href="{% url 'search' %}?q={{ post.topic|urlencode }}" class="back-link">← More on {{ post.topic|topic_title }}</a>
+    <h1 class="article-topic">{{ post.topic|topic_title }}</h1>
+    <p class="article-meta">
+        Quality score {{ post.quality_score|floatformat:2 }}
+        · Post #{{ post.id }}
+        · {{ post.created_at|date:"M j, Y" }}
+    </p>
+    <div class="article-body">{{ post.content }}</div>
+
+    {% if keywords %}
+    <section class="article-keywords">
+        <h3>Key terms in this article</h3>
+        {% for kw in keywords %}
+            <span class="keyword-pill">{{ kw }}</span>
+        {% endfor %}
+    </section>
+    {% endif %}
+</article>
+{% endblock %}
