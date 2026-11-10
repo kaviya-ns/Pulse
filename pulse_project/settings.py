@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '***REMOVED***'
+# Set DJANGO_SECRET_KEY in the environment for any real deployment.
+# Without it, a random key is generated on each start (fine for local demos).
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or get_random_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [h for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',') if h]
 
 
 # Application definition
@@ -79,11 +84,11 @@ WSGI_APPLICATION = 'pulse_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'pulse_db',
-        'USER': 'pulse_user',
-        'PASSWORD':'***REMOVED***',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.environ.get('PULSE_DB_NAME', 'pulse_db'),
+        'USER': os.environ.get('PULSE_DB_USER', 'pulse_user'),
+        'PASSWORD': os.environ.get('PULSE_DB_PASSWORD', ''),
+        'HOST': os.environ.get('PULSE_DB_HOST', 'localhost'),
+        'PORT': os.environ.get('PULSE_DB_PORT', '5432'),
     }
 }
 

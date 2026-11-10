@@ -1,0 +1,10 @@
+django
+scikit-learn
+scipy
+numpy
+pandas
+nltk
+rank-bm25
+networkx
+faker
+whoosh
